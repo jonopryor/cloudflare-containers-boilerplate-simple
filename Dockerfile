@@ -1,10 +1,15 @@
-FROM nginx:latest
+# syntax=docker/dockerfile:1
 
-# Basic nginx configuration for Cloudflare container
-COPY nginx.conf /etc/nginx/nginx.conf
+FROM golang:1.23 AS build
+WORKDIR /app
 
-# Expose port 80 (nginx default)
-EXPOSE 80
+COPY container_src/go.mod ./
+RUN go mod download
 
-# Nginx runs in foreground by default, which is what we want
-CMD ["nginx", "-g", "daemon off;"]
+COPY container_src/*.go ./
+RUN CGO_ENABLED=0 GOOS=linux go build -o /server
+
+FROM scratch
+COPY --from=build /server /server
+EXPOSE 8080
+CMD ["/server"]

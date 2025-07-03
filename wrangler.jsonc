@@ -1,41 +1,36 @@
 {
-  "name": "cloudflare-container-boilerplate-simple",
-  "main": "src/index.ts",
-  "compatibility_date": "2025-01-03",
-  "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": true,
-  
-  "observability": {
-    "enabled": true
-  },
-
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_sqlite_classes": ["MyContainer"]
-    }
-  ],
-
-  "containers": [
-    {
-      "name": "my-container",
-      "image": "./Dockerfile",
-      "class_name": "MyContainer",
-      "max_instances": 10,
-      "instance_type": "standard"
-    }
-  ],
-
-  "durable_objects": {
-    "bindings": [
-      {
-        "class_name": "MyContainer",
-        "name": "MY_CONTAINER"
-      }
-    ]
-  },
-
-  "vars": {
-    // Add any environment variables your container needs here
-  }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cloudflare-container-boilerplate-simple",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-05-06",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"containers": [
+		{
+			"class_name": "MyContainer",
+			"image": "./Dockerfile",
+			"max_instances": 3,
+			"name": "container-package-class-example"
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "MyContainer",
+				"name": "MY_CONTAINER"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"MyContainer"
+			],
+			"tag": "v1"
+		}
+	]
 }
