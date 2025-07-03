@@ -4,6 +4,10 @@ import { Container } from "@cloudflare/containers";
 export class MyContainer extends Container {
   defaultPort = 80; // Default port your container listens on (nginx default)
   sleepAfter = "30m";  // Sleep after 30 minutes of inactivity
+  
+  // Use manual start to have more control over container startup
+  // This helps avoid blockConcurrencyWhile timeouts
+  manualStart = true;
 
   // Lifecycle method called when container starts
   override onStart(): void {
@@ -25,16 +29,29 @@ export class MyContainer extends Container {
   // Handle incoming requests - forward them to the container
   async fetch(request: Request): Promise<Response> {
     try {
-      // Check if container is running, if not, start it and wait for port to be ready
+      // Check if container is running, if not, start it WITHOUT waiting for ports
+      // This avoids the blockConcurrencyWhile timeout issue
       if (!this.ctx.container.running) {
         console.log("Container not running, starting...");
-        await this.startAndWaitForPorts();
-        console.log("Container started and port is ready");
+        await this.start(); // Just start, don't wait for ports
+        
+        // Give the container a moment to initialize
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
       
-      // Forward all requests to the container on the default port (80)
-      // This also automatically renews the activity timeout
-      return await this.containerFetch(request);
+      // Try to forward the request to the container
+      // If the port isn't ready yet, we'll catch the error and retry
+      try {
+        return await this.containerFetch(request);
+      } catch (error: any) {
+        // If container isn't ready yet, wait a bit and retry once
+        if (error.message?.includes('not ready') || error.message?.includes('Connection refused')) {
+          console.log("Container not ready, waiting and retrying...");
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return await this.containerFetch(request);
+        }
+        throw error;
+      }
     } catch (error) {
       console.error("Container fetch error:", error);
       return new Response(`Container error: ${error}`, { status: 500 });
