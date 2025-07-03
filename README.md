@@ -5,7 +5,6 @@ A simple boilerplate for deploying containerized applications to Cloudflare Work
 ## Prerequisites
 
 - Node.js 16+ and npm
-- Docker (required for building container images)
 - Cloudflare account with Workers enabled
 - Wrangler CLI (installed as dev dependency)
 
@@ -39,11 +38,11 @@ A simple boilerplate for deploying containerized applications to Cloudflare Work
 
 ## Configuration
 
-The `wrangler.toml` file contains the Worker configuration. By default, it uses `ghcr.io/docker/welcome-to-docker:latest` as the container image.
+The `wrangler.jsonc` file contains the Worker configuration. By default, it uses `nginx:latest` as the container image.
 
 To use a different container image, you have two options:
 
-1. **Edit wrangler.toml directly**: Change the `image` field in the `[[containers]]` section
+1. **Edit wrangler.jsonc directly**: Change the `image` field in the `containers` section
 2. **Use environment variable**: Set `CONTAINER_IMAGE` and run `npm run deploy:with-image`
 
 ## Development
@@ -79,14 +78,10 @@ The Worker uses the `@cloudflare/containers` package to manage containers:
 - Durable Object binding: `MY_CONTAINER`
 - Default port: 80 (nginx default)
 - Sleep after: 5 minutes of inactivity
-- Default image: Local Dockerfile (nginx-based)
+- Default image: `nginx:latest` (or any image listening on port 80)
+- Observability: Enabled for container logs
 
-**Important**: Currently, Cloudflare Containers require a local Dockerfile. The system will:
-1. Build your container image locally using Docker
-2. Push it to Cloudflare's integrated registry
-3. Distribute it globally across Cloudflare's network
-
-**Note**: Public image support (Docker Hub, GHCR, etc.) is planned but not yet available in the beta.
+**Note**: The container assumes the upstream image is listening on port 80. No modifications or extra code are needed for the upstream image.
 
 ## How It Works
 
@@ -107,8 +102,8 @@ The container:
 ```
 ├── src/
 │   └── index.ts            # Main Worker code with Container class implementation
-├── wrangler.toml           # Cloudflare Worker configuration
-├── wrangler.template.toml  # Template for dynamic image configuration
+├── wrangler.jsonc          # Cloudflare Worker configuration (JSON with comments)
+├── wrangler.template.jsonc # Template for dynamic image configuration
 ├── tsconfig.json           # TypeScript configuration
 ├── package.json            # Node.js dependencies and scripts
 ├── .env.example            # Environment variables template

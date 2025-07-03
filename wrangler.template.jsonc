@@ -1,0 +1,41 @@
+{
+  "name": "cloudflare-container-app",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-03",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  
+  "observability": {
+    "enabled": true
+  },
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["MyContainer"]
+    }
+  ],
+
+  "containers": [
+    {
+      "name": "my-container",
+      "image": "CONTAINER_IMAGE_PLACEHOLDER",
+      "class_name": "MyContainer",
+      "max_instances": 10,
+      "instance_type": "standard"
+    }
+  ],
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "MyContainer",
+        "name": "MY_CONTAINER"
+      }
+    ]
+  },
+
+  "vars": {
+    // Add any environment variables your container needs here
+  }
+}

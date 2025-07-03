@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "deploy:with-image": "node -e \"const fs=require('fs'); const image=process.env.CONTAINER_IMAGE||'nginx:latest'; const template=fs.readFileSync('wrangler.template.toml','utf8'); fs.writeFileSync('wrangler.toml',template.replace('CONTAINER_IMAGE_PLACEHOLDER',image)); console.log('Deploying with image:',image);\" && wrangler deploy",
+    "deploy:with-image": "node -e \"const fs=require('fs'); const image=process.env.CONTAINER_IMAGE||'nginx:latest'; const template=fs.readFileSync('wrangler.template.jsonc','utf8'); fs.writeFileSync('wrangler.jsonc',template.replace('CONTAINER_IMAGE_PLACEHOLDER',image)); console.log('Deploying with image:',image);\" && wrangler deploy",
     "type-check": "tsc --noEmit"
   },
   "keywords": [],
