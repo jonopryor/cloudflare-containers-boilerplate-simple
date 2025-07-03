@@ -13,8 +13,10 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
-export class MyContainer {
-  constructor(private state: DurableObjectState, private env: Env) {}
+export class MyContainer extends DurableObject {
+  constructor(ctx: DurableObjectState, env: Env) {
+    super(ctx, env);
+  }
 
   async fetch(request: Request): Promise<Response> {
     try {
