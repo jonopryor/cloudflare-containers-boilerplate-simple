@@ -1,3 +1,5 @@
+import { DurableObject } from "cloudflare:workers";
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
