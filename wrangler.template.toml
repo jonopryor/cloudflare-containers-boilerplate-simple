@@ -5,7 +5,7 @@ compatibility_date = "2025-01-03"
 [[containers]]
 binding = "CONTAINER"
 class_name = "MyContainer"
-image = "nginx:latest"
+image = "CONTAINER_IMAGE_PLACEHOLDER"
 
 [vars]
 # Add any environment variables your container needs here
