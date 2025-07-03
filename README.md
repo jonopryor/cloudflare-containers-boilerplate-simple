@@ -38,7 +38,7 @@ A simple boilerplate for deploying containerized applications to Cloudflare Work
 
 ## Configuration
 
-The `wrangler.toml` file contains the Worker configuration. By default, it uses `nginx:latest` as the container image.
+The `wrangler.toml` file contains the Worker configuration. By default, it uses `ghcr.io/docker/welcome-to-docker:latest` as the container image.
 
 To use a different container image, you have two options:
 
@@ -57,7 +57,7 @@ npm run dev
 Deploy to Cloudflare Workers:
 
 ```bash
-# Deploy with default nginx:latest image
+# Deploy with default welcome-to-docker image
 npm run deploy
 
 # Deploy with custom container image
@@ -73,10 +73,12 @@ CONTAINER_IMAGE=your-image:tag npm run deploy:with-image
 
 ## Container Configuration
 
-The Worker binds to a container with:
-- Binding name: `CONTAINER`
-- Class name: `MyContainer`
-- Default image: `nginx:latest`
+The Worker uses the `@cloudflare/containers` package to manage containers:
+- Container class: `MyContainer` (extends `Container` from @cloudflare/containers)
+- Durable Object binding: `MY_CONTAINER`
+- Default port: 8080
+- Sleep after: 5 minutes of inactivity
+- Default image: `ghcr.io/docker/welcome-to-docker:latest`
 
 You can use any OCI-compliant container image from:
 - Docker Hub (e.g., `nginx:latest`, `alpine:latest`)
@@ -87,16 +89,21 @@ You can use any OCI-compliant container image from:
 
 The worker:
 1. Receives incoming HTTP/HTTPS requests
-2. Forwards the request directly to the container binding (ports 80/443)
-3. Returns the container's response
+2. Uses `getRandom()` to select a container instance (supports load balancing)
+3. Forwards the request to the container on port 8080
+4. Returns the container's response
 
-The container is automatically provisioned and managed by Cloudflare.
+The container:
+- Extends the `Container` class from `@cloudflare/containers`
+- Is managed as a Durable Object with automatic lifecycle management
+- Sleeps after 5 minutes of inactivity to save resources
+- Can be scaled by adjusting `max_instances` in wrangler.toml
 
 ## Project Structure
 
 ```
 ├── src/
-│   └── index.ts            # Main Worker code (port forwarding logic)
+│   └── index.ts            # Main Worker code with Container class implementation
 ├── wrangler.toml           # Cloudflare Worker configuration
 ├── wrangler.template.toml  # Template for dynamic image configuration
 ├── tsconfig.json           # TypeScript configuration
@@ -111,12 +118,15 @@ The container is automatically provisioned and managed by Cloudflare.
 - Container images are pulled and cached by Cloudflare
 - Workers have specific CPU and memory limits
 - Not all container features are supported (see Cloudflare docs)
-- The worker automatically handles port forwarding for HTTP (80) and HTTPS (443)
+- The worker uses the `@cloudflare/containers` package for container management
+- Containers run as Durable Objects for stateful operation
+- Default configuration forwards requests to port 8080 on the container
 
 ## Resources
 
 - [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
-- [Cloudflare Container Runtime](https://developers.cloudflare.com/workers/runtime-apis/containers/)
+- [Cloudflare Containers Documentation](https://developers.cloudflare.com/containers/)
+- [@cloudflare/containers Package](https://www.npmjs.com/package/@cloudflare/containers)
 
 ## License
 
