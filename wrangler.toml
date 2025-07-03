@@ -1,0 +1,15 @@
+name = "drc-orro-dev"
+main = "src/index.ts"
+compatibility_date = "2025-01-03"
+
+[[containers]]
+binding = "CONTAINER"
+class_name = "DebtRecyclingCalc"
+image = "ghcr.io/shanehull/debtrecyclingcalc.com:latest"
+
+[vars]
+GITHUB_REPO_URL = "https://github.com/shanehull/debtrecyclingcalc.com"
+
+[[routes]]
+pattern = "drc.orro.dev/*"
+zone_name = "orro.dev"
