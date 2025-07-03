@@ -1,113 +1,123 @@
 # Cloudflare Container Boilerplate
 
-A minimal boilerplate for deploying containers on Cloudflare Workers with automatic port forwarding for HTTP/HTTPS traffic.
-
-**Current Configuration**: Set up for deploying https://github.com/shanehull/debtrecyclingcalc.com to drc.orro.dev
-
-## Features
-
-- Minimal TypeScript worker that forwards ports 80/443 to containers
-- Container sourced from public GitHub repository via environment variable
-- Simple deployment with latest Wrangler CLI
-- Reusable and flexible architecture
+A simple boilerplate for deploying containerized applications to Cloudflare Workers using Cloudflare's container runtime.
 
 ## Prerequisites
 
 - Node.js 16+ and npm
-- Cloudflare account
-- Wrangler CLI (included as dev dependency)
+- Cloudflare account with Workers enabled
+- Wrangler CLI (installed as dev dependency)
 
-## Quick Start
+## Setup
 
 1. Clone this repository:
-```bash
-git clone <your-repo-url>
-cd cloudflare-container-boilerplate
-```
+   ```bash
+   git clone https://github.com/jonopryor/cloudflare-containers-boilerplate-simple.git
+   cd cloudflare-containers-boilerplate-simple
+   ```
 
 2. Install dependencies:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-3. Login to Cloudflare (interactive):
-```bash
-npx wrangler login
-```
+3. Copy the environment example file:
+   ```bash
+   cp .env.example .env
+   ```
 
-4. Deploy to Cloudflare:
-```bash
-npx wrangler deploy
-```
+4. Fill in your Cloudflare credentials in `.env`:
+   - `CLOUDFLARE_API_TOKEN`: Your Cloudflare API token
+   - `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare account ID
+   - `CONTAINER_IMAGE`: Your container image URL (optional)
 
-The worker will be deployed to https://drc.orro.dev
-
-## Customizing for Your Container
-
-To use a different container:
-
-1. Update `wrangler.toml`:
-   - Change `name` to your worker name
-   - Update `image` to your container image URL
-   - Modify `pattern` and `zone_name` for your domain
-
-2. Update the `GITHUB_REPO_URL` environment variable
+5. Login to Cloudflare (if not using API token):
+   ```bash
+   npx wrangler login
+   ```
 
 ## Configuration
 
-### Environment Variables
+The `wrangler.toml` file contains the Worker configuration. By default, it uses `nginx:latest` as the container image.
 
-- `GITHUB_REPO_URL`: The public GitHub repository URL containing your container code
+To use a different container image, you have two options:
 
-### wrangler.toml
-
-The configuration file includes:
-- Worker name and entry point
-- Container binding configuration
-- Default environment variable setup
+1. **Edit wrangler.toml directly**: Change the `image` field in the `[[containers]]` section
+2. **Use environment variable**: Set `CONTAINER_IMAGE` and run `npm run deploy:with-image`
 
 ## Development
 
-Run the worker locally:
+Run the Worker locally:
 ```bash
 npm run dev
 ```
 
-Type check the code:
+## Deployment
+
+Deploy to Cloudflare Workers:
+
 ```bash
-npm run type-check
+# Deploy with default nginx:latest image
+npm run deploy
+
+# Deploy with custom container image
+CONTAINER_IMAGE=your-image:tag npm run deploy:with-image
 ```
+
+## Scripts
+
+- `npm run dev` - Run the Worker locally in development mode
+- `npm run deploy` - Deploy to Cloudflare Workers with default image
+- `npm run deploy:with-image` - Deploy with custom container image from CONTAINER_IMAGE env var
+- `npm run type-check` - Run TypeScript type checking
+
+## Container Configuration
+
+The Worker binds to a container with:
+- Binding name: `CONTAINER`
+- Class name: `MyContainer`
+- Default image: `nginx:latest`
+
+You can use any OCI-compliant container image from:
+- Docker Hub (e.g., `nginx:latest`, `alpine:latest`)
+- GitHub Container Registry (e.g., `ghcr.io/owner/image:tag`)
+- Other registries (Quay.io, GCR, etc.)
 
 ## How It Works
 
 The worker:
 1. Receives incoming HTTP/HTTPS requests
-2. Forwards the request directly to the container binding
+2. Forwards the request directly to the container binding (ports 80/443)
 3. Returns the container's response
 
-The container is defined in `wrangler.toml` and automatically provisioned by Cloudflare.
+The container is automatically provisioned and managed by Cloudflare.
 
-## Deployment
-
-Deploy to production:
-```bash
-npm run deploy
-```
-
-For environment-specific deployments:
-```bash
-wrangler deploy --env production
-```
-
-## Architecture
+## Project Structure
 
 ```
-src/index.ts      # Minimal worker that handles port forwarding
-wrangler.toml     # Cloudflare configuration
-tsconfig.json     # TypeScript configuration
-package.json      # Project dependencies and scripts
+├── src/
+│   └── index.ts            # Main Worker code (port forwarding logic)
+├── wrangler.toml           # Cloudflare Worker configuration
+├── wrangler.template.toml  # Template for dynamic image configuration
+├── tsconfig.json           # TypeScript configuration
+├── package.json            # Node.js dependencies and scripts
+├── .env.example            # Environment variables template
+└── DEPLOYMENT.md           # Detailed deployment instructions
 ```
+
+## Notes
+
+- The container runs in Cloudflare's secure sandbox environment
+- Container images are pulled and cached by Cloudflare
+- Workers have specific CPU and memory limits
+- Not all container features are supported (see Cloudflare docs)
+- The worker automatically handles port forwarding for HTTP (80) and HTTPS (443)
+
+## Resources
+
+- [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
+- [Cloudflare Container Runtime](https://developers.cloudflare.com/workers/runtime-apis/containers/)
 
 ## License
 
-ISC# cloudflare-containers-boilerplate-simple
+ISC
