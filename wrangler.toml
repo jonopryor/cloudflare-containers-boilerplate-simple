@@ -1,23 +1,23 @@
 name = "cloudflare-container-app"
 main = "src/index.ts"
 compatibility_date = "2025-01-03"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
 
-# Container configuration
-[[containers]]
-max_instances = 10
-name = "my-container"
-class_name = "MyContainer"
-image = "./Dockerfile"
-
-# Durable Object binding for the container
-[[durable_objects.bindings]]
-name = "MY_CONTAINER"
-class_name = "MyContainer"
-
-# Migration configuration for Durable Objects
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["MyContainer"]
+
+[[containers]]
+name = "my-container"
+image = "./Dockerfile"
+class_name = "MyContainer"
+max_instances = 10
+instance_type = "standard"
+
+[[durable_objects.bindings]]
+class_name = "MyContainer"
+name = "MY_CONTAINER"
 
 [vars]
 # Add any environment variables your container needs here
