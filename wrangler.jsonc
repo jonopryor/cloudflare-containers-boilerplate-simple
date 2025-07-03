@@ -19,7 +19,7 @@
   "containers": [
     {
       "name": "my-container",
-      "image": "nginx:latest",
+      "image": "./Dockerfile",
       "class_name": "MyContainer",
       "max_instances": 10,
       "instance_type": "standard"
