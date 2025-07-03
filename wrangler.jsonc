@@ -1,5 +1,5 @@
 {
-  "name": "cloudflare-container-app",
+  "name": "cloudflare-container-boilerplate-simple",
   "main": "src/index.ts",
   "compatibility_date": "2025-01-03",
   "compatibility_flags": ["nodejs_compat"],
