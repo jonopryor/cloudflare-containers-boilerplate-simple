@@ -2,17 +2,8 @@ name = "cloudflare-container-app"
 main = "src/index.ts"
 compatibility_date = "2025-01-03"
 
-[[durable_objects.bindings]]
-name = "MY_CONTAINER"
-class_name = "MyContainer"
-
-[[migrations]]
-tag = "v1"
-new_sqlite_classes = ["MyContainer"]
-
 [[containers]]
-binding = "CONTAINER"
-class_name = "MyContainer"
+binding = "MYCONTAINER"
 image = "CONTAINER_IMAGE_PLACEHOLDER"
 
 [vars]
