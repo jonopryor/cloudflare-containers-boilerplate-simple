@@ -7,7 +7,7 @@ compatibility_date = "2025-01-03"
 max_instances = 10
 name = "my-container"
 class_name = "MyContainer"
-image = "ghcr.io/docker/welcome-to-docker:latest"
+image = "./Dockerfile"
 
 # Durable Object binding for the container
 [[durable_objects.bindings]]

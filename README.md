@@ -5,6 +5,7 @@ A simple boilerplate for deploying containerized applications to Cloudflare Work
 ## Prerequisites
 
 - Node.js 16+ and npm
+- Docker (required for building container images)
 - Cloudflare account with Workers enabled
 - Wrangler CLI (installed as dev dependency)
 
@@ -76,21 +77,23 @@ CONTAINER_IMAGE=your-image:tag npm run deploy:with-image
 The Worker uses the `@cloudflare/containers` package to manage containers:
 - Container class: `MyContainer` (extends `Container` from @cloudflare/containers)
 - Durable Object binding: `MY_CONTAINER`
-- Default port: 8080
+- Default port: 80 (nginx default)
 - Sleep after: 5 minutes of inactivity
-- Default image: `ghcr.io/docker/welcome-to-docker:latest`
+- Default image: Local Dockerfile (nginx-based)
 
-You can use any OCI-compliant container image from:
-- Docker Hub (e.g., `nginx:latest`, `alpine:latest`)
-- GitHub Container Registry (e.g., `ghcr.io/owner/image:tag`)
-- Other registries (Quay.io, GCR, etc.)
+**Important**: Currently, Cloudflare Containers require a local Dockerfile. The system will:
+1. Build your container image locally using Docker
+2. Push it to Cloudflare's integrated registry
+3. Distribute it globally across Cloudflare's network
+
+**Note**: Public image support (Docker Hub, GHCR, etc.) is planned but not yet available in the beta.
 
 ## How It Works
 
 The worker:
 1. Receives incoming HTTP/HTTPS requests
 2. Uses `getRandom()` to select a container instance (supports load balancing)
-3. Forwards the request to the container on port 8080
+3. Forwards the request to the container on port 80
 4. Returns the container's response
 
 The container:

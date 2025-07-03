@@ -5,7 +5,7 @@ const INSTANCE_COUNT = 1;
 
 // Define your container class extending Container
 class MyContainer extends Container {
-  defaultPort = 8080; // Default port your container listens on
+  defaultPort = 80; // Default port your container listens on (nginx default)
   sleepAfter = "5m";  // Sleep after 5 minutes of inactivity
 }
 
