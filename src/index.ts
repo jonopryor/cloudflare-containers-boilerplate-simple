@@ -3,7 +3,19 @@ import { Container } from "@cloudflare/containers";
 // Define your container class extending Container
 export class MyContainer extends Container {
   defaultPort = 80; // Default port your container listens on (nginx default)
-  sleepAfter = "5m";  // Sleep after 5 minutes of inactivity
+  sleepAfter = "30m";  // Sleep after 30 minutes of inactivity
+
+  // Handle incoming requests - forward them to the container
+  async fetch(request: Request): Promise<Response> {
+    try {
+      // Forward all requests to the container on the default port (80)
+      // This also automatically renews the activity timeout
+      return await this.containerFetch(request);
+    } catch (error) {
+      console.error("Container fetch error:", error);
+      return new Response(`Container error: ${error}`, { status: 500 });
+    }
+  }
 }
 
 export default {
