@@ -1,15 +1,11 @@
-name = "drc-orro-dev"
+name = "cloudflare-container-app"
 main = "src/index.ts"
 compatibility_date = "2025-01-03"
 
 [[containers]]
 binding = "CONTAINER"
-class_name = "DebtRecyclingCalc"
-image = "ghcr.io/shanehull/debtrecyclingcalc.com:latest"
+class_name = "MyContainer"
+image = "your-container-image-url:tag"
 
 [vars]
-GITHUB_REPO_URL = "https://github.com/shanehull/debtrecyclingcalc.com"
-
-[[routes]]
-pattern = "drc.orro.dev/*"
-zone_name = "orro.dev"
+# Add any environment variables your container needs here
